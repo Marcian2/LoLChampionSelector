@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator, Animated, Easing, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, Animated, Easing, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenWrapper } from '../components/ScreenWrapper';
 import { HextechButton } from '../components/HextechButton';
@@ -144,94 +144,103 @@ const LootScreen = () => {
   };
 
   return (
-    <ScreenWrapper centered>
+    <ScreenWrapper centered={false}>
       <View style={styles.container}>
         
         {/* HEADER BUTTONS */}
         <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                <Text style={styles.backButtonText}>← BACK</Text>
-            </TouchableOpacity>
+            <View style={styles.headerLeft}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Text style={styles.backButtonText}>← BACK</Text>
+                </TouchableOpacity>
+            </View>
             
-            <CurrencyDisplay />
+            <View style={styles.headerCenter}>
+                <CurrencyDisplay />
+            </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate('Inventory')} style={styles.inventoryButton}>
-                <Text style={styles.inventoryButtonText}>INVENTORY 📦</Text>
-            </TouchableOpacity>
+            <View style={styles.headerRight}>
+                <TouchableOpacity onPress={() => navigation.navigate('Inventory')} style={styles.inventoryButton}>
+                    <Text style={styles.inventoryButtonText}>INVENTORY 🎒</Text>
+                </TouchableOpacity>
+            </View>
         </View>
 
-        <Text style={styles.title}>Hextech Crafting</Text>
-        <Text style={styles.subtitle}>Open a chest to unlock a random skin!</Text>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            <Text style={styles.title}>Hextech Crafting</Text>
+            {!reward && <Text style={styles.subtitle}>Open a chest to unlock a random skin!</Text>}
 
-        <View style={styles.contentArea}>
-            {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#C89B3C" />
-                    <Text style={styles.loadingText}>Forging Hextech Key...</Text>
-                </View>
-            ) : reward ? (
-                <Animated.View style={{ 
-                    opacity: fadeAnim,
-                    transform: [{ scale: scaleAnim }, { rotateY: spin }] 
-                }}>
-                    <View style={styles.rewardCard}>
-                        <HextechCard>
-                            <Text style={styles.skinTitle}>{reward.skinName}</Text>
-                            <Image 
-                                source={{ uri: reward.imageUrl }} 
-                                style={styles.rewardImage}
-                                resizeMode="cover"
+            <View style={styles.contentArea}>
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#C89B3C" />
+                        <Text style={styles.loadingText}>Forging Hextech Key...</Text>
+                    </View>
+                ) : reward ? (
+                    <Animated.View style={{ 
+                        opacity: fadeAnim,
+                        transform: [{ scale: scaleAnim }, { rotateY: spin }] 
+                    }}>
+                        <View style={styles.rewardCard}>
+                            <HextechCard>
+                                <Text style={styles.skinTitle}>{reward.skinName}</Text>
+                                <Image 
+                                    source={{ uri: reward.imageUrl }} 
+                                    style={styles.rewardImage}
+                                    resizeMode="cover"
+                                />
+                                <Text style={styles.championName}>{reward.championName}</Text>
+                            </HextechCard>
+                        </View>
+                    </Animated.View>
+                ) : (
+                    <View style={styles.placeholder}>
+                        <Text style={styles.placeholderText}>🎁</Text>
+                    </View>
+                )}
+            </View>
+
+            <View style={styles.buttonContainer}>
+                {pendingSkin ? (
+                    <View style={styles.decisionButtons}>
+                        <View style={{ flex: 1, marginRight: 10 }}>
+                            <HextechButton 
+                                text="DISCARD" 
+                                onPress={handleDiscard}
+                                variant="primary"
                             />
-                            <Text style={styles.championName}>{reward.championName}</Text>
-                        </HextechCard>
+                        </View>
+                        <View style={{ flex: 1, marginLeft: 10 }}>
+                            <HextechButton 
+                                text="KEEP" 
+                                onPress={handleKeep}
+                                variant="gold"
+                            />
+                        </View>
                     </View>
-                </Animated.View>
-            ) : (
-                <View style={styles.placeholder}>
-                    <Text style={styles.placeholderText}>?</Text>
-                </View>
-            )}
-        </View>
-
-        <View style={styles.buttonContainer}>
-            {pendingSkin ? (
-                <View style={styles.decisionButtons}>
-                    <View style={{ flex: 1, marginRight: 10 }}>
+                ) : (
+                    essence >= 300 ? (
                         <HextechButton 
-                            text="DISCARD" 
-                            onPress={handleDiscard}
-                            variant="primary"
-                        />
-                    </View>
-                    <View style={{ flex: 1, marginLeft: 10 }}>
-                        <HextechButton 
-                            text="KEEP" 
-                            onPress={handleKeep}
+                            text={loading ? "Opening..." : "OPEN CHEST (300 BE)"} 
+                            onPress={openChest}
+                            disabled={loading}
                             variant="gold"
                         />
-                    </View>
-                </View>
-            ) : (
-                essence >= 300 ? (
-                    <HextechButton 
-                        text={loading ? "Opening..." : "OPEN CHEST (300 BE)"} 
-                        onPress={openChest}
-                        disabled={loading}
-                        variant="gold"
-                    />
-                ) : (
-                    <View style={{ width: '100%', alignItems: 'center' }}>
-                        <Text style={{ color: '#A09B8C', marginBottom: 10 }}>Not enough Essence (Need 300)</Text>
-                        <HextechButton 
-                            text={adLoading ? "Watching Ad..." : "WATCH AD (+500 BE)"} 
-                            onPress={watchAd}
-                            disabled={adLoading}
-                            variant="primary"
-                        />
-                    </View>
-                )
-            )}
-        </View>
+                    ) : (
+                        <View style={{ width: '100%', alignItems: 'center' }}>
+                            <Text style={{ color: '#A09B8C', marginBottom: 10 }}>Not enough Essence (Need 300)</Text>
+                            <HextechButton 
+                                text={adLoading ? "Watching Ad..." : "WATCH AD (+500 BE)"} 
+                                onPress={watchAd}
+                                disabled={adLoading}
+                                variant="primary"
+                            />
+                        </View>
+                    )
+                )}
+            </View>
+            <View style={{ height: 50 }} /> 
+        </ScrollView>
       </View>
     </ScreenWrapper>
   );
@@ -239,19 +248,43 @@ const LootScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1,
     width: '100%',
-    padding: 20,
+  },
+  scrollContent: {
+    alignItems: 'center',
+    paddingTop: 80, // Space for header
+    paddingBottom: 40,
+    paddingHorizontal: 20,
   },
   header: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    marginBottom: 20,
+    height: 60, // Fixed height for better alignment
+    paddingHorizontal: 10, // Reduced padding to give more space to center
     position: 'absolute',
     top: 0,
     zIndex: 10,
+    backgroundColor: 'rgba(9, 20, 40, 0.9)', // Slightly more opaque
+    borderBottomWidth: 1,
+    borderBottomColor: '#3C3C41', // Subtle separator
+  },
+  headerLeft: {
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerRight: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   backButton: {
     padding: 10,
@@ -290,7 +323,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#C89B3C',
     marginBottom: 10,
-    marginTop: 40, // Space for header
     textTransform: 'uppercase',
     letterSpacing: 2,
     textAlign: 'center',
@@ -302,7 +334,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentArea: {
-    height: 450, 
+    minHeight: 300, 
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
@@ -317,7 +349,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   rewardCard: {
-    width: 300,
+    width: '100%', 
+    maxWidth: 320, // Limit card width
     alignItems: 'center',
   },
   skinTitle: {
@@ -328,11 +361,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   rewardImage: {
-    width: '100%',
-    aspectRatio: 0.56, // Match loading screen image ratio
-    borderRadius: 4,
+    width: 260,
+    height: 460, // Fixed dimensions for consistent look
+    borderRadius: 8,
     marginBottom: 15,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#C89B3C',
   },
   championName: {
@@ -351,6 +384,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#1E2328',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
   },
   placeholderText: {
     fontSize: 80,

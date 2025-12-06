@@ -11,6 +11,9 @@ import { EconomyProvider } from './src/context/EconomyContext';
 
 // Screens
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
+import { ChatScreen } from './src/screens/ChatScreen';
+import { MatchupScreen } from './src/screens/MatchupScreen';
+import { TeamBuilderScreen } from './src/screens/TeamBuilderScreen';
 import { LaneQuizScreen } from './src/screens/LaneQuizScreen';
 import { LaneSelectionScreen } from './src/screens/LaneSelectionScreen';
 import { ChampionQuizScreen } from './src/screens/ChampionQuizScreen';
@@ -53,6 +56,9 @@ const AppNavigator = () => {
         <Stack.Screen name="History" component={HistoryScreen} />
         <Stack.Screen name="Loot" component={LootScreen} />
         <Stack.Screen name="Inventory" component={InventoryScreen} />
+        <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="Matchup" component={MatchupScreen} />
+        <Stack.Screen name="TeamBuilder" component={TeamBuilderScreen} />
         
         {/* NEW DETAIL SCREEN */}
         <Stack.Screen name="ChampionDetail" component={ChampionDetailScreen} />
@@ -65,13 +71,13 @@ const AppNavigator = () => {
 export default function App() {
   return (
     <DataProvider>
-      <HistoryProvider>
-        <LootProvider>
-          <EconomyProvider>
+      <EconomyProvider>
+        <HistoryProvider>
+          <LootProvider>
             <AppNavigator />
-          </EconomyProvider>
-        </LootProvider>
-      </HistoryProvider>
+          </LootProvider>
+        </HistoryProvider>
+      </EconomyProvider>
     </DataProvider>
   );
 }

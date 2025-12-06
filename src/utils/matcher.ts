@@ -10,10 +10,10 @@ export interface UserPreferences {
 }
 
 const POINTS = {
-  THEME: 5,
-  DAMAGE: 10,
+  THEME: 6,
+  DAMAGE: 5,
   TAG: 5,
-  RANGE: 5,
+  RANGE: 3,
   DIFFICULTY: 5
 };
 

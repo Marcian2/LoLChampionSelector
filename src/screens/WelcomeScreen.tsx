@@ -55,6 +55,24 @@ export const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
           onPress={() => navigation.navigate('Loot')} 
           variant="primary" 
         />
+
+        <HextechButton 
+          text="ASK THE ORACLE 🔮" 
+          onPress={() => navigation.navigate('Chat')} 
+          variant="primary" 
+        />
+
+        <HextechButton 
+          text="MATCHUP ANALYZER ⚔️" 
+          onPress={() => navigation.navigate('Matchup')} 
+          variant="primary" 
+        />
+
+        <HextechButton 
+          text="TEAM BUILDER 🛡️" 
+          onPress={() => navigation.navigate('TeamBuilder')} 
+          variant="primary" 
+        />
       </HextechCard>
       
     </ScreenWrapper>
