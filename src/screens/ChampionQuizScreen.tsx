@@ -1,66 +1,56 @@
-// src/screens/ChampionQuizScreen.tsx
-import React from 'react';
-import { StyleSheet, Text, SafeAreaView, StatusBar } from 'react-native';
+import React, { useState } from 'react';
+import { Text, StyleSheet } from 'react-native';
+import { ScreenWrapper } from '../components/ScreenWrapper';
 import { HextechCard } from '../components/HextechCard';
 import { HextechButton } from '../components/HextechButton';
-import { UserPreferences } from '../utils/matcher'; // Import the new type
-import { ChampQuestion } from '../types';
+import { champion_questions } from '../data/champion_questions';
+import { findBestChampions, UserPreferences } from '../utils/matcher';
+import { useData } from '../context/DataContext'; // Use the Global Database
 
-interface ChampionQuizScreenProps {
-  question: ChampQuestion;
-  currentQuestionIndex: number;
-  totalQuestions: number;
-  // This function now receives Traits, not LanePoints
-  onAnswer: (traits: UserPreferences) => void; 
-}
+export const ChampionQuizScreen = ({ route, navigation }: any) => {
+  const { selectedLane } = route.params; // Get "Top" or "Mid"
+  const { champions } = useData(); // Get Database
+  
+  const [currentId, setCurrentId] = useState('root');
+  const [traits, setTraits] = useState<UserPreferences>({ roleFilter: selectedLane });
 
-export const ChampionQuizScreen = ({ question, currentQuestionIndex, totalQuestions, onAnswer }: ChampionQuizScreenProps) => {
+  const handleAnswer = (newTraits: UserPreferences, nextId: string) => {
+    const updatedTraits = {
+      ...traits,
+      ...newTraits,
+      tags: [...(traits.tags || []), ...(newTraits.tags || [])]
+    };
+    setTraits(updatedTraits);
+
+    if (nextId === 'RESULT') {
+      // Calculate
+      const results = findBestChampions(updatedTraits, champions);
+      navigation.navigate('Result', { results, title: `Best ${selectedLane} Champions` });
+    } else {
+      setCurrentId(nextId);
+    }
+  };
+
+  const question = champion_questions[currentId];
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <Text style={styles.title}>Champion Finder</Text>
-      <Text style={styles.progress}>Question {currentQuestionIndex + 1} / {totalQuestions}</Text>
-      
+    <ScreenWrapper>
+      <Text style={styles.title}>PHASE 2: CHAMPION</Text>
       <HextechCard>
         <Text style={styles.questionText}>{question.text}</Text>
-        
-        {question.options.map((option, index) => (
+        {question.options.map((opt, i) => (
           <HextechButton 
-            key={index}
-            text={option.text}
-            // Here we pass the specific traits from the button
-            onPress={() => onAnswer(option.traits)} 
-            variant="primary"
+            key={i} 
+            text={opt.text} 
+            onPress={() => handleAnswer(opt.traits, opt.nextQuestionId)} 
           />
         ))}
       </HextechCard>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#121212',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    color: '#0AC8B9', // Cyan for Champion Quiz (Distinct from Gold)
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  progress: {
-    color: '#888',
-    marginBottom: 20,
-  },
-  questionText: {
-    fontSize: 20,
-    color: '#F0E6D2',
-    marginBottom: 25,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
+  title: { fontSize: 28, color: '#0AC8B9', fontWeight: 'bold', marginBottom: 20 },
+  questionText: { fontSize: 20, color: '#FFF', marginBottom: 20, textAlign: 'center' }
 });

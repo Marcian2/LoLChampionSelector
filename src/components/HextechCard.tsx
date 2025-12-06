@@ -1,9 +1,8 @@
-// src/components/HextechCard.tsx
 import React, { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 interface HextechCardProps {
-  children: ReactNode; // This means it can accept other components inside it
+  children: ReactNode;
 }
 
 export const HextechCard = ({ children }: HextechCardProps) => {
@@ -17,16 +16,16 @@ export const HextechCard = ({ children }: HextechCardProps) => {
 const styles = StyleSheet.create({
   card: {
     width: '100%',
-    backgroundColor: '#266cb2ff', // LoL Hextech Blue-Grey
+    backgroundColor: '#1E2328', // The official "LoL Client" panel color
     padding: 25,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#1c1c3eff',
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#C8AA6E',     // Gold Border
     // Shadows
-    shadowColor: "#240404ff",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
   }
 });

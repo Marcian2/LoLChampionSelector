@@ -1,68 +1,79 @@
-import { DamageType, Gender, Difficulty } from "../types";
 import { ChampQuestion } from "../types";
 
-export const champion_questions: ChampQuestion[] = [
-  // 1. Gender (User Request)
-  {
-    id: 1,
-    text: "Do you prefer playing as a specific gender?",
-    options: [
-      { text: "I prefer Male characters.", traits: { gender: 'Male' } },
-      { text: "I prefer Female characters.", traits: { gender: 'Female' } },
-      { text: "I like Monsters/Creatures.", traits: { gender: 'Monster' } },
-      { text: "I don't care.", traits: {} } // No points, neutral
-    ]
-  },
+export const champion_questions: Record<string, ChampQuestion> = {
   
-  // 2. Damage Type (User Request)
-  {
-    id: 2,
-    text: "What kind of damage do you want to deal?",
+  // === ROOT ===
+  'root': {
+    id: 'root',
+    text: "Deep down, what role do you want to play in the story?",
     options: [
-      { text: "Physical (Swords, Guns, Arrows).", traits: { damageType: 'AD' } },
-      { text: "Magical (Spells, Elements).", traits: { damageType: 'AP' } },
-      { text: "I want to be a Tank (Low Dmg, High HP).", traits: { damageType: 'Tank' } }
+      { text: "The Slayer. I want to deal damage and get kills.", traits: { tags: ['Carry'] }, nextQuestionId: 'damage_type' },
+      { text: "The Strategist. I control the flow and help the team.", traits: { tags: ['Utility'] }, nextQuestionId: 'utility_style' },
+      { text: "The Raid Boss. I want to be unkillable.", traits: { damageType: 'Tank', tags: ['Frontline'] }, nextQuestionId: 'tank_style' }
     ]
   },
 
-  // 3. AoE vs Single Target (User Request)
-  {
-    id: 3,
-    text: "Do you prefer hitting one person hard, or everyone at once?",
+  // === BRANCH A: DAMAGE ===
+  'damage_type': {
+    id: 'damage_type',
+    text: "What is your weapon of choice?",
     options: [
-      { text: "Area of Effect (Hit the whole team).", traits: { tag: 'AoE' } },
-      { text: "Single Target (Focus one enemy).", traits: { tag: 'Duelist' } },
+      { text: "Heavy Weapons / Brute Force.", traits: { damageType: 'AD' }, nextQuestionId: 'damage_range' },
+      { text: "Magic / Spells / Elements.", traits: { damageType: 'AP' }, nextQuestionId: 'damage_range' },
+      { text: "Precision and Speed.", traits: { damageType: 'AD', tags: ['Duelist'] }, nextQuestionId: 'damage_range' }
+    ]
+  },
+  'damage_range': {
+    id: 'damage_range',
+    text: "How close do you get to the enemy?",
+    options: [
+      { text: "Face to face (Melee).", traits: { rangeType: 'Melee' }, nextQuestionId: 'vibe_check' },
+      { text: "Safe distance (Ranged).", traits: { rangeType: 'Ranged' }, nextQuestionId: 'vibe_check' },
+      { text: "I sneak up on them (Assassin).", traits: { tags: ['Assassin'] }, nextQuestionId: 'vibe_check' }
     ]
   },
 
-  // 4. Assassination (User Request)
-  {
-    id: 4,
-    text: "Do you want to sneak in and delete people instantly?",
+  // === BRANCH B: UTILITY ===
+  'utility_style': {
+    id: 'utility_style',
+    text: "How do you support your team?",
     options: [
-      { text: "Yes, I want to be an Assassin.", traits: { tag: 'Assassin' } },
-      { text: "No, I prefer extended fights.", traits: { tag: 'Fighter' } },
+      { text: "By healing and shielding them.", traits: { tags: ['Enchanter'], damageType: 'AP' }, nextQuestionId: 'vibe_check' },
+      { text: "By locking enemies down (Stuns/Hooks).", traits: { tags: ['CC', 'Catcher'] }, nextQuestionId: 'tank_style' }, // <--- FIXED!
+      { text: "By dealing damage from afar.", traits: { tags: ['Mage', 'Poke'] }, nextQuestionId: 'vibe_check' }
     ]
   },
 
-  // 5. Complexity (My Suggestion - Crucial for new players)
-  {
-    id: 5,
-    text: "How much brain power do you want to use?",
+  // === BRANCH C: TANK ===
+  'tank_style': {
+    id: 'tank_style',
+    text: "What represents your ideal defense?",
     options: [
-      { text: "Simple. I just want to run at them.", traits: { difficulty: 1 } },
-      { text: "Complex. I want high skill expression.", traits: { difficulty: 3 } },
+      { text: "I charge in first (Engage).", traits: { tags: ['Engage'], rangeType: 'Melee' }, nextQuestionId: 'vibe_check' },
+      { text: "I stand between my team and danger (Protector).", traits: { tags: ['Peel', 'Warden'] }, nextQuestionId: 'vibe_check' },
     ]
   },
 
-  // 6. Range (My Suggestion - Major playstyle factor)
-  {
-    id: 6,
-    text: "How close do you want to get to the enemy?",
+  // === CONVERGENCE: VIBE ===
+  'vibe_check': {
+    id: 'vibe_check',
+    text: "Finally, what aesthetic do you prefer?",
     options: [
-      { text: "Melee (Up close and personal).", traits: { rangeType: 'Melee' } },
-      { text: "Ranged (Safe distance).", traits: { rangeType: 'Ranged' } },
+      { text: "Dark, Edgy, and Dangerous.", traits: { tags: ['Dark'] }, nextQuestionId: 'difficulty_check' },
+      { text: "Heroic, Noble, and Bright.", traits: { tags: ['Heroic'] }, nextQuestionId: 'difficulty_check' },
+      { text: "Monstrous or Otherworldly.", traits: { tags: ['Monster'] }, nextQuestionId: 'difficulty_check' },
+      { text: "Cute or Whimsical.", traits: { tags: ['Cute'] }, nextQuestionId: 'difficulty_check' }
+    ]
+  },
+
+  // === FINAL: DIFFICULTY ===
+  'difficulty_check': {
+    id: 'difficulty_check',
+    text: "How complex do you want the champion to be?",
+    options: [
+      { text: "Simple. I want to relax.", traits: { difficulty: 1 }, nextQuestionId: 'RESULT' },
+      { text: "Average.", traits: { difficulty: 2 }, nextQuestionId: 'RESULT' },
+      { text: "Hard. I want to show off my skills.", traits: { difficulty: 3 }, nextQuestionId: 'RESULT' }
     ]
   }
-];
-
+};

@@ -3,27 +3,64 @@ export type DamageType = 'AD' | 'AP' | 'Hybrid' | 'Tank';
 export type Difficulty = 1 | 2 | 3 | 4 | 5;
 export type Gender = 'Male' | 'Female' | 'Monster' | 'Other';
 
-export interface Champion {
-    id: string;
-    name: string;
+export interface ChampionLogic {
     roles: Lane[];
     damageType: DamageType;
     difficulty: Difficulty;
     playstyle: string[];
     gender: Gender;
-    description: string;
-    image: string; // will add
 }
 
+export interface Champion extends ChampionLogic {
+    id: string;
+    name: string;
+    description: string;
+    image: string;
+    percentage?: number;
+}
+
+// --- NEW INTERFACES FOR DETAIL SCREEN ---
+export interface ChampionSkin {
+    id: string;
+    num: number;
+    name: string;
+    chromas: boolean;
+    loadingUrl: string; // We will generate these
+    splashUrl: string;
+}
+  
+export interface ChampionSpell {
+    id: string;
+    name: string;
+    description: string;
+    imageUrl: string;
+    cooldown: number[];
+    cost: number[];
+}
+
+export interface ChampionDetail extends Champion {
+    lore: string;
+    title: string;
+    skins: ChampionSkin[];
+    spells: ChampionSpell[];
+    passive: {
+      name: string;
+      description: string;
+      imageUrl: string;
+    };
+}
+// ----------------------------------------
+
 export interface ChampQuestion {
-    id: number,
-    text: string,
-    options:{
+    id: string;
+    text: string;
+    options: {
         text: string;
+        nextQuestionId: string;
         traits: {
             gender?: Gender;
             damageType?: DamageType;
-            tag?: string; //maps to playstyle Assasin, Aoe etc
+            tags?: string[]; 
             difficulty?: number;
             rangeType?: 'Melee' | 'Ranged';
         };
