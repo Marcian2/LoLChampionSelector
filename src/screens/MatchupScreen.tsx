@@ -55,12 +55,6 @@ export const MatchupScreen = ({ navigation }: any) => {
         const matchesSearch = champ.name.toLowerCase().includes(query);
 
         // 3. Not Picked (Unique)
-        // If we are replacing a champion, we shouldn't count the one currently in THIS slot as "taken"
-        // But for simplicity, if you want to re-select the same one, you can clear it first or just pick another.
-        // Actually, if I am editing Ally Top (Garen), Garen is in pickedIds.
-        // If I want to see Garen in the list, I should exclude the current slot's champion from pickedIds.
-        // Let's refine pickedIds logic inside openSelection or pass current slot info.
-        // For now, strict uniqueness is fine.
         const isAvailable = !pickedIds.has(champ.id);
 
         return matchesRole && matchesSearch && isAvailable;

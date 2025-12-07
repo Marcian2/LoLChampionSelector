@@ -1,15 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { HextechCard } from '../components/HextechCard';
 import { HextechButton } from '../components/HextechButton';
 import { ScreenWrapper } from '../components/ScreenWrapper';
 import { CurrencyDisplay } from '../components/CurrencyDisplay';
+import { Ionicons } from '@expo/vector-icons';
 
 interface WelcomeScreenProps {
   navigation: any; // <--- Uses Navigation now
 }
 
 export const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
+  const openPayPal = () => {
+    Linking.openURL('https://paypal.me/marciansuta');
+  };
+
   return (
     <ScreenWrapper>
       
@@ -73,6 +78,13 @@ export const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
           onPress={() => navigation.navigate('TeamBuilder')} 
           variant="primary" 
         />
+
+        {/* PAYPAL DONATION BUTTON */}
+        <TouchableOpacity style={styles.paypalButton} onPress={openPayPal}>
+          <Ionicons name="heart" size={20} color="white" style={{ marginRight: 8 }} />
+          <Text style={styles.paypalText}>Donate with PayPal</Text>
+        </TouchableOpacity>
+
       </HextechCard>
       
     </ScreenWrapper>
@@ -98,8 +110,55 @@ const styles = StyleSheet.create({
     borderColor: '#C8AA6E',
   },
   headerContainer: { marginBottom: 50, alignItems: 'center' },
-  title: { fontSize: 20, color: '#F0E6D2', fontWeight: 'bold', letterSpacing: 4, opacity: 0.8 },
-  subtitle: { fontSize: 48, color: '#C8AA6E', fontWeight: '800', letterSpacing: 2, marginTop: -5 },
-  cardTitle: { fontSize: 20, color: '#F0E6D2', textAlign: 'center', marginBottom: 15, fontWeight: 'bold', borderBottomWidth: 1, borderBottomColor: '#C8AA6E', paddingBottom: 10, textTransform: 'uppercase' },
-  description: { fontSize: 15, color: '#A09B8C', textAlign: 'center', marginBottom: 10, lineHeight: 22 },
+  title: {
+    fontSize: 24,
+    color: '#C8AA6E',
+    fontWeight: 'bold',
+    letterSpacing: 2,
+  },
+  subtitle: {
+    fontSize: 48,
+    color: '#F0E6D2',
+    fontWeight: 'bold',
+    letterSpacing: 4,
+    textShadowColor: '#0AC8B9',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
+  },
+  cardTitle: {
+    fontSize: 18,
+    color: '#C8AA6E',
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  description: {
+    color: '#A09B8C',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  paypalButton: {
+    flexDirection: 'row',
+    backgroundColor: '#0070BA',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    width: '100%',
+  },
+  paypalText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });
