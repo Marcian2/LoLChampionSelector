@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import * as Linking from 'expo-linking';
 
 // Context
 import { DataProvider, useData } from './src/context/DataContext';
@@ -26,6 +28,29 @@ import InventoryScreen from './src/screens/InventoryScreen';
 
 const Stack = createNativeStackNavigator();
 
+const prefix = Linking.createURL('/');
+
+const linking = {
+  prefixes: [prefix],
+  config: {
+    screens: {
+      Welcome: '',
+      Settings: 'settings',
+      LaneQuiz: 'lane-quiz',
+      LaneSelection: 'lane-selection',
+      ChampionQuiz: 'champion-quiz',
+      Result: 'result',
+      History: 'history',
+      Loot: 'loot',
+      Inventory: 'inventory',
+      Chat: 'chat',
+      Matchup: 'matchup',
+      TeamBuilder: 'team-builder',
+      ChampionDetail: 'champion/:championId',
+    },
+  },
+};
+
 // This component handles the loading state before showing the app
 const AppNavigator = () => {
   const { isLoading } = useData();
@@ -39,7 +64,7 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking} fallback={<ActivityIndicator color="#C8AA6E" />}>
       <Stack.Navigator 
         screenOptions={{ 
           headerShown: false, 
@@ -70,15 +95,17 @@ const AppNavigator = () => {
 
 export default function App() {
   return (
-    <DataProvider>
-      <EconomyProvider>
-        <HistoryProvider>
-          <LootProvider>
-            <AppNavigator />
-          </LootProvider>
-        </HistoryProvider>
-      </EconomyProvider>
-    </DataProvider>
+    <SafeAreaProvider>
+      <DataProvider>
+        <EconomyProvider>
+          <HistoryProvider>
+            <LootProvider>
+              <AppNavigator />
+            </LootProvider>
+          </HistoryProvider>
+        </EconomyProvider>
+      </DataProvider>
+    </SafeAreaProvider>
   );
 }
 
