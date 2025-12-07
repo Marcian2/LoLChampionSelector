@@ -1,9 +1,8 @@
 import React from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import * as Linking from 'expo-linking';
+import * as Linking from 'expo-linking'; // Ensure this is imported
 
 // Context
 import { DataProvider, useData } from './src/context/DataContext';
@@ -28,13 +27,13 @@ import InventoryScreen from './src/screens/InventoryScreen';
 
 const Stack = createNativeStackNavigator();
 
+// --- LINKING CONFIGURATION ---
 const prefix = Linking.createURL('/');
-
-const linking = {
-  prefixes: [prefix],
+const linking: LinkingOptions<ReactNavigation.RootParamList> = {
+  prefixes: [prefix, 'https://marcian2.github.io/LoLChampionSelector'],
   config: {
     screens: {
-      Welcome: '',
+      Welcome: '', // Matches the root path
       Settings: 'settings',
       LaneQuiz: 'lane-quiz',
       LaneSelection: 'lane-selection',
@@ -51,7 +50,6 @@ const linking = {
   },
 };
 
-// This component handles the loading state before showing the app
 const AppNavigator = () => {
   const { isLoading } = useData();
 
@@ -64,7 +62,7 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer linking={linking} fallback={<ActivityIndicator color="#C8AA6E" />}>
+    <NavigationContainer linking={linking} fallback={<View style={styles.loadingContainer} />}>
       <Stack.Navigator 
         screenOptions={{ 
           headerShown: false, 
@@ -84,10 +82,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="Matchup" component={MatchupScreen} />
         <Stack.Screen name="TeamBuilder" component={TeamBuilderScreen} />
-        
-        {/* NEW DETAIL SCREEN */}
         <Stack.Screen name="ChampionDetail" component={ChampionDetailScreen} />
-        
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -95,17 +90,15 @@ const AppNavigator = () => {
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <DataProvider>
-        <EconomyProvider>
-          <HistoryProvider>
-            <LootProvider>
-              <AppNavigator />
-            </LootProvider>
-          </HistoryProvider>
-        </EconomyProvider>
-      </DataProvider>
-    </SafeAreaProvider>
+    <DataProvider>
+      <EconomyProvider>
+        <HistoryProvider>
+          <LootProvider>
+            <AppNavigator />
+          </LootProvider>
+        </HistoryProvider>
+      </EconomyProvider>
+    </DataProvider>
   );
 }
 
