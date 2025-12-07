@@ -8,7 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "export": "npx expo export --platform web",
+    "export": "npx expo export --platform web && node scripts/generate-nojekyll.js",
     "predeploy": "npm run export",
     "deploy": "gh-pages -d dist"
   },
