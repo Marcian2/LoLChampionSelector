@@ -2,11 +2,15 @@
   "name": "lolchampionselector",
   "version": "1.0.0",
   "main": "index.ts",
+  "homepage": "https://Marcian2.github.io/LoLChampionSelector",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "export": "npx expo export --platform web",
+    "predeploy": "npm run export",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -25,6 +29,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
+    "gh-pages": "^6.3.0",
     "typescript": "~5.9.2"
   },
   "private": true
